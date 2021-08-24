@@ -1,0 +1,29 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "This MPID is already configured"
+        },
+        "error": {
+            "cannot_connect": "Failed to connect",
+            "invalid_auth": "Invalid authentication",
+            "unknown": "Unexpected error"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "api_token": "Token"
+                },
+                "description": "Connect to your Barry account",
+                "title": "Barry account setup"
+            },
+            "mpid": {
+                "data": {
+                    "mpid": "metering point"
+                },
+                "description": "Enter or choose your MPID",
+                "title": "Metering point (MPID)"
+            }
+        }
+    },
+    "title": "Flipr"
+}
