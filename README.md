@@ -11,5 +11,5 @@ This custom component for Home Assistant has been created the time the official 
 3. search and install "Barry" in HACS and click `install`.
 4. Restart Home Assistant.
 5. Refresh browser cache for the frontend.
-6. Install the integration via the UI (Configuration > Integrations > Flipr)
+6. Install the integration via the UI (Configuration > Integrations > Barry)
 
