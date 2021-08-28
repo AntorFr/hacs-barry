@@ -3,7 +3,7 @@
   "name": "Barry",
   "config_flow": true,
   "documentation": "https://github.com/antorFR/hacs-barry",
-  "version": "0.1",
+  "version": "0.1.2",
   "requirements": [
     "python-barry-energy==0.0.4"
   ],
