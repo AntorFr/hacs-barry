@@ -5,7 +5,7 @@
   "documentation": "https://github.com/antorFR/hacs-barry",
   "version": "0.1",
   "requirements": [
-    "git+https://github.com/AntorFr/python-barry-energy.git#python-barry-energy==0.0.4"
+    "python-barry-energy==0.0.4"
   ],
   "codeowners": [
     "@AntorFR"

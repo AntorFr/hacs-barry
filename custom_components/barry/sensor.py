@@ -6,11 +6,18 @@ from homeassistant.const import (
     ATTR_ATTRIBUTION
 
 )
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.typing import StateType
+from homeassistant.config_entries import ConfigEntry
+
 from homeassistant.util import Throttle
-from homeassistant.util.dt import as_local
+
+from homeassistant.util.dt import as_local, utcnow
 
 from datetime import timedelta
+
+from typing import Any
 
 from . import BarryEntity
 
@@ -30,7 +37,8 @@ SENSORS = {
 SCAN_INTERVAL = timedelta(seconds=120)
 
 
-async def async_setup_entry(hass, config_entry, async_add_entities):
+async def async_setup_entry(
+        hass: HomeAssistant, config_entry: ConfigEntry, async_add_entities) -> bool:
     """Defer sensor setup to the shared sensor module."""
     coordinator = hass.data[DOMAIN][config_entry.entry_id]
 
@@ -39,55 +47,57 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         sensors_list.append(BarrySensor(coordinator, sensor))
 
     async_add_entities(sensors_list, True)
+    return True
 
 
 class BarrySensor(BarryEntity, Entity):
     """Sensor representing FliprSensor data."""
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Return the name of the particular component."""
         return f"Barry {SENSORS[self.info_type]['name']}"
 
     @property
-    def state(self):
+    def state(self) -> StateType:
         """State of the sensor."""
-        return self.coordinator.getData(self.info_type,self.coordinator.client.now)["price"]
+        return self.get_data(self.info_type, utcnow())
 
     @property
-    def device_class(self):
+    def device_class(self) -> str:
         """Return the device class."""
         return SENSORS[self.info_type]["device_class"]
 
     @property
-    def icon(self):
+    def icon(self) -> str:
         """Return the icon."""
         return SENSORS[self.info_type]["icon"]
 
     @property
-    def unit_of_measurement(self):
+    def unit_of_measurement(self) -> str:
         """Return unit of measurement."""
         return SENSORS[self.info_type]["unit"]
 
     @property
-    def device_state_attributes(self):
+    def device_state_attributes(self) -> dict[str, Any]:
         """Return device attributes."""
         return {self.info_type: {
-                        as_local(info["start_date"]).isoformat(): info["price"]
-                        for info in self.coordinator.data[self.info_type]
-                    },
-                ATTR_ATTRIBUTION: ATTRIBUTION}
+            as_local(h).isoformat(): data
+            for h, data in self.get_data(self.info_type).items()
+        },
+            ATTR_ATTRIBUTION: ATTRIBUTION}
 
     @Throttle(SCAN_INTERVAL)
     def update(self):
         """Update device state."""
         try:
             _LOGGER.debug("Barry - Update device state")
-            self._attr_state = self.coordinator.getData(self.info_type,self.coordinator.client.now)["price"]
+            self._attr_state = self.coordinator.get_data(
+                self.info_type, utcnow())
             self._attr_extra_state_attributes.update = {
                 self.info_type: {
-                    as_local(info["start_date"]).isoformat(): info["price"]
-                    for info in self.coordinator.data[self.info_type]
+                    as_local(h).isoformat(): data
+                    for h, data in self.get_data(self.info_type).items()
                 }
             }
         except KeyError as error:
