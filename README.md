@@ -1,4 +1,4 @@
-# Barry HACS
+# [Barry](barry.energy) HACS
 
 This custom component for Home Assistant has been created the time the official team developpe an official integration
 
