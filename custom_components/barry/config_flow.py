@@ -11,7 +11,7 @@ from homeassistant.const import CURRENCY_EURO
 
 from homeassistant import config_entries
 
-from .const import CONF_TOKEN, CONF_ZONE, CONF_MPID,CONF_CURRENCY, CONF_CURRENCY_KRONE
+from .const import CONF_TOKEN, CONF_ZONE, CONF_MPID, CONF_CURRENCY, CONF_CURRENCY_KRONE
 from .const import DOMAIN  # pylint:disable=unused-import
 
 import logging
@@ -73,7 +73,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 CONF_TOKEN: self._token,
                 CONF_ZONE: self._mpid["price"],
                 CONF_MPID: self._mpid["mpid"],
-                CONF_CURRENCY: self.get_currency(self._mpid)
+                CONF_CURRENCY: self._get_currency(self._mpid)
             },
         )
 
@@ -118,7 +118,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 CONF_TOKEN: self._token,
                 CONF_ZONE: self._mpid["price"],
                 CONF_MPID: self._mpid["mpid"],
-                CONF_CURRENCY: self.get_currency(self._mpid)
+                CONF_CURRENCY: self._get_currency(self._mpid)
             }
         )
 
