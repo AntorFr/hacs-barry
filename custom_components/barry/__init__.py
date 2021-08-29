@@ -7,7 +7,7 @@ from datetime import (
 import logging
 import traceback
 
-from typing import Dict
+from typing import Dict, Generator
 
 from async_timeout import timeout
 from barry_energy import BarryEnergyAPI, PriceArea
@@ -124,17 +124,18 @@ class BarryDataUpdateCoordinator(DataUpdateCoordinator):
         _LOGGER.debug("Fetching barry kWh price data")
 
         if (self.data is not None) and ("kWh_prices" in self.data):
+            # remove result older than today
             prev_results = {date: price for date, price
                             in self.data["kWh_prices"].items()
-                            if date >= self.client.today_start}
+                            if date >= start_of_local_day()}
         else:
             prev_results = {}
 
         if utcnow().hour >= 18:
             # tomorrow prices are available
-            end_time = self.client.today_start+timedelta(days=2)
+            end_time = start_of_local_day()+timedelta(days=2)
         else:
-            end_time = self.client.today_start+timedelta(days=1)
+            end_time = start_of_local_day()+timedelta(days=1)
 
         data_to_fetch = self.hourly_iterator(end_time, prev_results.keys())
         data_to_fetch = list(data_to_fetch)[:API_BATCH_SIZE]
@@ -161,12 +162,17 @@ class BarryDataUpdateCoordinator(DataUpdateCoordinator):
         """get hourly datetime range data from now to end of range."""
         return [self.hourly_delta(h) for h in range if self.hour_delta(h) not in exclusion]
 
-    def hourly_iterator(self, end_time: datetime, exclusion: list = []) -> list:
+    def hourly_iterator(self, end_time: datetime, exclusion: list = []) -> Generator:
         """get hourly datetime iterator data for now to end_time."""
-        start_time = self.client.now.replace(tzinfo=timezone.utc)
+        start_time = start_of_local_day().astimezone(timezone.utc)
         end_time = end_time.astimezone(timezone.utc)
+
+        # always start with curent time
+        now = self.client.now.replace(tzinfo=timezone.utc)
+        if now not in exclusion:
+            yield now
         while end_time > start_time:
-            if start_time not in exclusion:
+            if (start_time not in exclusion) and (start_time != now):
                 yield start_time
             start_time = start_time + timedelta(hours=1)
 
@@ -217,12 +223,6 @@ class BarryEntity(CoordinatorEntity):
 
     def get_day_data(self, info_type: str, dt_or_d: date | datetime | None = None):
         """get info_type data at for today."""
-        if dt_or_d is None:
-            d: date = start_of_local_day().date()
-        elif isinstance(dt_or_d, datetime):
-            d = dt_or_d.date()
-        else:
-            d = dt_or_d
-
+        start_day = start_of_local_day(dt_or_d)
         results = self.get_data(info_type)
-        return {dt: data for dt, data in results.items() if (dt.date() == d)}
+        return {dt: data for dt, data in results.items() if (dt >= start_day and dt < start_day+timedelta(hours=24))}
