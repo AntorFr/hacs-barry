@@ -28,8 +28,10 @@ from .const import (
     CONF_TOKEN,
     CONF_ZONE,
     CONF_MPID,
+    CONF_CURRENCY,
     DOMAIN,
     API_TIMEOUT,
+    API_BATCH_SIZE,
     NAME
 )
 
@@ -88,6 +90,7 @@ class BarryDataUpdateCoordinator(DataUpdateCoordinator):
         token = entry.data[CONF_TOKEN]
         self.zone = entry.data[CONF_ZONE]
         self.mpid = entry.data[CONF_MPID]
+        self.currency = entry.data[CONF_CURRENCY]
 
         # Establishes the connection.
         self.client = BarryEnergyAPI(token)
@@ -134,7 +137,7 @@ class BarryDataUpdateCoordinator(DataUpdateCoordinator):
             end_time = self.client.today_start+timedelta(days=1)
 
         data_to_fetch = self.hourly_iterator(end_time, prev_results.keys())
-        data_to_fetch = list(data_to_fetch)[:2]
+        data_to_fetch = list(data_to_fetch)[:API_BATCH_SIZE]
 
         results = await asyncio.gather(
             *(self.hass.async_add_executor_job(
@@ -175,6 +178,7 @@ class BarryEntity(CoordinatorEntity):
         """Initialize Flipr sensor."""
         super().__init__(coordinator)
         self.mpid = coordinator.mpid
+        self.currency = coordinator.currency
         self.info_type = info_type
         self._unique_id = "barry_{mpid:.5}_{info_type}".format(
             mpid=self.mpid, info_type=self.info_type)

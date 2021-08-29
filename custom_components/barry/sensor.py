@@ -27,7 +27,7 @@ _LOGGER = logging.getLogger(__name__)
 
 SENSORS = {
     "kWh_prices": {
-        "unit": f"{CURRENCY_EURO}/{ENERGY_KILO_WATT_HOUR}",
+        "unit": f"#currency#/{ENERGY_KILO_WATT_HOUR}",
         "icon": "mdi:currency-eur",
         "name": "kWh total price",
         "device_class": DEVICE_CLASS_MONETARY,
@@ -76,7 +76,7 @@ class BarrySensor(BarryEntity, Entity):
     @property
     def unit_of_measurement(self) -> str:
         """Return unit of measurement."""
-        return SENSORS[self.info_type]["unit"]
+        return SENSORS[self.info_type]["unit"].replace('#currency#', self.currency)
 
     @property
     def device_state_attributes(self) -> dict[str, Any]:

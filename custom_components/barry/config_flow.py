@@ -6,10 +6,12 @@ from barry_energy import BarryEnergyAPI, PriceArea
 from requests.exceptions import HTTPError, Timeout
 import voluptuous as vol
 
+from homeassistant.const import CURRENCY_EURO
+
 
 from homeassistant import config_entries
 
-from .const import CONF_TOKEN, CONF_ZONE, CONF_MPID
+from .const import CONF_TOKEN, CONF_ZONE, CONF_MPID,CONF_CURRENCY, CONF_CURRENCY_KRONE
 from .const import DOMAIN  # pylint:disable=unused-import
 
 import logging
@@ -70,7 +72,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data={
                 CONF_TOKEN: self._token,
                 CONF_ZONE: self._mpid["price"],
-                CONF_MPID: self._mpid["mpid"]
+                CONF_MPID: self._mpid["mpid"],
+                CONF_CURRENCY: self.get_currency(self._mpid)
             },
         )
 
@@ -104,7 +107,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 ),
             )
 
-        # Get chosen flipr_id.
+        # Get chosen mpid.
         for mpid in self._possible_mpid:
             if mpid["mpid"] == user_input[CONF_MPID]:
                 self._mpid = mpid
@@ -114,7 +117,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             {
                 CONF_TOKEN: self._token,
                 CONF_ZONE: self._mpid["price"],
-                CONF_MPID: self._mpid["mpid"]
+                CONF_MPID: self._mpid["mpid"],
+                CONF_CURRENCY: self.get_currency(self._mpid)
             }
         )
 
@@ -126,5 +130,10 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                   "price":m["priceCode"]} for m in meteringPoints]
         return mpids
 
-    def _get_meteringPoints(self, client):
+    @staticmethod
+    def _get_meteringPoints(client):
         return client.meteringPoints
+
+    @staticmethod
+    def _get_currency(data):
+        return CONF_CURRENCY_KRONE if data.get('country') == 'DK' else CURRENCY_EURO
