@@ -82,8 +82,8 @@ class BarrySensor(BarryEntity, Entity):
     def device_state_attributes(self) -> dict[str, Any]:
         """Return device attributes."""
         return {self.info_type: {
-            as_local(h).isoformat(): data
-            for h, data in self.get_data(self.info_type).items()
+            as_local(h).hour: data
+            for h, data in self.get_day_data(self.info_type).items()
         },
             ATTR_ATTRIBUTION: ATTRIBUTION}
 
@@ -96,8 +96,8 @@ class BarrySensor(BarryEntity, Entity):
                 self.info_type, utcnow())
             self._attr_extra_state_attributes.update = {
                 self.info_type: {
-                    as_local(h).isoformat(): data
-                    for h, data in self.get_data(self.info_type).items()
+                    as_local(h).hour: data
+                    for h, data in self.get_day_data(self.info_type).items()
                 }
             }
         except KeyError as error:

@@ -2,7 +2,7 @@
 from __future__ import annotations
 import asyncio
 from datetime import (
-    timezone, datetime, timedelta
+    timezone, datetime, timedelta, date
 )
 import logging
 import traceback
@@ -22,7 +22,7 @@ from homeassistant.helpers.update_coordinator import (
     DataUpdateCoordinator,
     UpdateFailed
 )
-from homeassistant.util.dt import utcnow
+from homeassistant.util.dt import utcnow, start_of_local_day
 
 from .const import (
     CONF_TOKEN,
@@ -214,3 +214,15 @@ class BarryEntity(CoordinatorEntity):
             return data[time]
         else:
             return None
+
+    def get_day_data(self, info_type: str, dt_or_d: date | datetime | None = None):
+        """get info_type data at for today."""
+        if dt_or_d is None:
+            d: date = start_of_local_day().date()
+        elif isinstance(dt_or_d, datetime):
+            d = dt_or_d.date()
+        else:
+            d = dt_or_d
+
+        results = self.get_data(info_type)
+        return {dt: data for dt, data in results.items() if (dt.date() == d)}
