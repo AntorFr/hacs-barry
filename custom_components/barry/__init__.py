@@ -29,6 +29,7 @@ from .const import (
     CONF_ZONE,
     CONF_MPID,
     CONF_CURRENCY,
+    CONF_REFRESH_HOUR,
     DOMAIN,
     API_TIMEOUT,
     API_BATCH_SIZE,
@@ -131,7 +132,7 @@ class BarryDataUpdateCoordinator(DataUpdateCoordinator):
         else:
             prev_results = {}
 
-        if utcnow().hour >= 18:
+        if utcnow().hour >= CONF_REFRESH_HOUR:
             # tomorrow prices are available
             end_time = start_of_local_day()+timedelta(days=2)
         else:
