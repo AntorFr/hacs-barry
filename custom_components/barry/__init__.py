@@ -30,6 +30,7 @@ from .const import (
     CONF_MPID,
     CONF_CURRENCY,
     CONF_REFRESH_HOUR,
+    CONF_SCAN_INTERVAL,
     DOMAIN,
     API_TIMEOUT,
     API_BATCH_SIZE,
@@ -38,7 +39,7 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
-SCAN_INTERVAL = timedelta(minutes=5)
+SCAN_INTERVAL = timedelta(minutes=CONF_SCAN_INTERVAL)
 
 PLATFORMS = ["sensor"]
 
