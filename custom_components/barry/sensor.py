@@ -1,7 +1,6 @@
 """Sensor platform for the Flipr's pool_sensor."""
 from homeassistant.const import (
     ENERGY_KILO_WATT_HOUR,
-    CURRENCY_EURO,
     DEVICE_CLASS_MONETARY,
     ATTR_ATTRIBUTION
 
@@ -11,11 +10,9 @@ from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.typing import StateType
 from homeassistant.config_entries import ConfigEntry
 
-from homeassistant.util import Throttle
+from homeassistant.util.dt import utcnow
 
-from homeassistant.util.dt import as_local, utcnow
-
-from datetime import timedelta
+from datetime import timedelta, date
 
 from typing import Any
 
@@ -33,8 +30,6 @@ SENSORS = {
         "device_class": DEVICE_CLASS_MONETARY,
     }
 }
-
-SCAN_INTERVAL = timedelta(seconds=120)
 
 
 async def async_setup_entry(
@@ -81,25 +76,8 @@ class BarrySensor(BarryEntity, Entity):
     @property
     def device_state_attributes(self) -> dict[str, Any]:
         """Return device attributes."""
-        return {self.info_type: {
-            as_local(h).hour: data
-            for h, data in self.get_day_data(self.info_type).items()
-        },
-            ATTR_ATTRIBUTION: ATTRIBUTION}
-
-    @Throttle(SCAN_INTERVAL)
-    def update(self):
-        """Update device state."""
-        try:
-            _LOGGER.debug("Barry - Update device state")
-            self._attr_state = self.coordinator.get_data(
-                self.info_type, utcnow())
-            self._attr_extra_state_attributes.update = {
-                self.info_type: {
-                    as_local(h).hour: data
-                    for h, data in self.get_day_data(self.info_type).items()
+        return {"current_day": self.attr_day_data(),
+                "next_day": self.attr_day_data(date.today() + timedelta(days=1)),
+                "current_frame": self.current_frame_data(),
+                ATTR_ATTRIBUTION: ATTRIBUTION
                 }
-            }
-        except KeyError as error:
-            _LOGGER.error("Missing curent value in values: %s: %s",
-                          self.info_type, error)

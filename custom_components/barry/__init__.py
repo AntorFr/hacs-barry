@@ -22,7 +22,7 @@ from homeassistant.helpers.update_coordinator import (
     DataUpdateCoordinator,
     UpdateFailed
 )
-from homeassistant.util.dt import utcnow, start_of_local_day
+from homeassistant.util.dt import utcnow, start_of_local_day, as_local
 
 from .const import (
     CONF_TOKEN,
@@ -40,6 +40,7 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 SCAN_INTERVAL = timedelta(minutes=CONF_SCAN_INTERVAL)
+
 
 PLATFORMS = ["sensor"]
 
@@ -223,8 +224,25 @@ class BarryEntity(CoordinatorEntity):
         else:
             return None
 
-    def get_day_data(self, info_type: str, dt_or_d: date | datetime | None = None):
+    def get_day_data(self, info_type: str, dt_or_d: date | datetime | None = None) -> dict:
         """get info_type data at for today."""
         start_day = start_of_local_day(dt_or_d)
         results = self.get_data(info_type)
         return {dt: data for dt, data in results.items() if (dt >= start_day and dt < start_day+timedelta(hours=24))}
+
+    def attr_day_data(self, dt_or_d: date | datetime | None = None) -> dict:
+        """format day data per hour to be displayed in attributes """
+        return {as_local(h).hour: data for h, data in self.get_day_data(self.info_type, dt_or_d).items()}
+
+    def current_frame_data(self):
+        """ display the curent frame (order) of day_data or None if day data not already loaded"""
+        day_data = self.get_day_data(self.info_type)
+        day_data = [d for d in sorted(day_data.values())]
+        curent_data = self.state
+
+        try:
+            return day_data.index(curent_data)
+        except ValueError as error:
+            _LOGGER.error("Missing curent value in values: %s: %s",
+                          curent_data, error)
+            return None
