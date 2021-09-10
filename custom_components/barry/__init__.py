@@ -22,7 +22,7 @@ from homeassistant.helpers.update_coordinator import (
     DataUpdateCoordinator,
     UpdateFailed
 )
-from homeassistant.util.dt import utcnow, start_of_local_day, as_local
+from homeassistant.util.dt import utcnow,now , start_of_local_day, as_local
 
 from .const import (
     CONF_TOKEN,
@@ -134,7 +134,7 @@ class BarryDataUpdateCoordinator(DataUpdateCoordinator):
         else:
             prev_results = {}
 
-        if utcnow().hour >= CONF_REFRESH_HOUR:
+        if now().hour >= CONF_REFRESH_HOUR:
             # tomorrow prices are available
             end_time = start_of_local_day()+timedelta(days=2)
         else:
