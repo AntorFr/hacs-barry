@@ -1,4 +1,4 @@
-"""Constants for the Flipr integration."""
+"""Constants for the Barry integration."""
 DOMAIN = "barry"
 
 CONF_TOKEN = "api_token"

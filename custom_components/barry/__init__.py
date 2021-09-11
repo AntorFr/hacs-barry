@@ -1,4 +1,4 @@
-"""The Flipr integration."""
+"""The Barry integration."""
 from __future__ import annotations
 import asyncio
 from datetime import (
@@ -181,10 +181,10 @@ class BarryDataUpdateCoordinator(DataUpdateCoordinator):
 
 
 class BarryEntity(CoordinatorEntity):
-    """Implements a common class elements representing the Flipr component."""
+    """Implements a common class elements representing the Barry component."""
 
     def __init__(self, coordinator: BarryDataUpdateCoordinator, info_type: str):
-        """Initialize Flipr sensor."""
+        """Initialize Barry sensor."""
         super().__init__(coordinator)
         self.mpid = coordinator.mpid
         self.currency = coordinator.currency
