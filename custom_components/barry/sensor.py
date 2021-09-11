@@ -1,4 +1,4 @@
-"""Sensor platform for the Flipr's pool_sensor."""
+"""Sensor platform for the Barry's pool_sensor."""
 from homeassistant.const import (
     ENERGY_KILO_WATT_HOUR,
     DEVICE_CLASS_MONETARY,
@@ -10,7 +10,7 @@ from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.typing import StateType
 from homeassistant.config_entries import ConfigEntry
 
-from homeassistant.util.dt import utcnow
+from homeassistant.util.dt import utcnow, utc_from_timestamp
 
 from datetime import timedelta, date
 
@@ -29,6 +29,7 @@ SENSORS = {
         "name": "kWh total price",
         "state_class": "measurement",
         "device_class": DEVICE_CLASS_MONETARY,
+        "last_reset": utc_from_timestamp(0),
     }
 }
 
