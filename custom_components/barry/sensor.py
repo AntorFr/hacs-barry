@@ -10,7 +10,7 @@ from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.typing import StateType
 from homeassistant.config_entries import ConfigEntry
 
-from homeassistant.util.dt import utcnow
+from homeassistant.util.dt import utcnow, utc_from_timestamp
 
 from datetime import timedelta, date
 
@@ -27,7 +27,9 @@ SENSORS = {
         "unit": f"#currency#/{ENERGY_KILO_WATT_HOUR}",
         "icon": "mdi:currency-eur",
         "name": "kWh total price",
+        "state_class": "measurement",
         "device_class": DEVICE_CLASS_MONETARY,
+        "last_reset": utc_from_timestamp(0),
     }
 }
 
@@ -46,7 +48,7 @@ async def async_setup_entry(
 
 
 class BarrySensor(BarryEntity, Entity):
-    """Sensor representing Barry data."""
+    """Sensor representing FliprSensor data."""
 
     @property
     def name(self) -> str:
@@ -62,6 +64,16 @@ class BarrySensor(BarryEntity, Entity):
     def device_class(self) -> str:
         """Return the device class."""
         return SENSORS[self.info_type]["device_class"]
+
+    @property
+    def state_class(self) -> str:
+        """Return the state class."""
+        return SENSORS[self.info_type]["state_class"]
+
+    @property
+    def last_reset(self) -> str:
+        """Return the last reset."""
+        return SENSORS[self.info_type]["last_reset"]
 
     @property
     def icon(self) -> str:
