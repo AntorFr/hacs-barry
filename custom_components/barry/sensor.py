@@ -1,4 +1,4 @@
-"""Sensor platform for the Barry's pool_sensor."""
+"""Sensor platform for the Flipr's pool_sensor."""
 from homeassistant.const import (
     ENERGY_KILO_WATT_HOUR,
     DEVICE_CLASS_MONETARY,
@@ -47,7 +47,7 @@ async def async_setup_entry(
 
 
 class BarrySensor(BarryEntity, Entity):
-    """Sensor representing Barry data."""
+    """Sensor representing FliprSensor data."""
 
     @property
     def name(self) -> str:

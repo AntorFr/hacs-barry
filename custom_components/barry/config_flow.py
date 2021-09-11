@@ -1,4 +1,4 @@
-"""Config flow for Barry integration."""
+"""Config flow for Flipr integration."""
 from typing import List
 
 import datetime
@@ -19,7 +19,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for Barry."""
+    """Handle a config flow for Flipr."""
 
     VERSION = 1
 
@@ -58,8 +58,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             if len(mpids) == 1:
                 self._mpid = mpids[0]
             else:
-                # If multiple barry found (rare case), we ask the user to choose one in a select box.
-                # The user will have to run config_flow as many times as many barry he has.
+                # If multiple flipr found (rare case), we ask the user to choose one in a select box.
+                # The user will have to run config_flow as many times as many fliprs he has.
                 self._possible_mpid = mpids
                 return await self.async_step_mpid()
 
