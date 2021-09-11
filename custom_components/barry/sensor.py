@@ -27,6 +27,7 @@ SENSORS = {
         "unit": f"#currency#/{ENERGY_KILO_WATT_HOUR}",
         "icon": "mdi:currency-eur",
         "name": "kWh total price",
+        "state_class": "measurement",
         "device_class": DEVICE_CLASS_MONETARY,
     }
 }
