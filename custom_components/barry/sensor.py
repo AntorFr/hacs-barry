@@ -66,6 +66,16 @@ class BarrySensor(BarryEntity, Entity):
         return SENSORS[self.info_type]["device_class"]
 
     @property
+    def state_class(self) -> str:
+        """Return the state class."""
+        return SENSORS[self.info_type]["state_class"]
+
+    @property
+    def last_reset(self) -> str:
+        """Return the last reset."""
+        return SENSORS[self.info_type]["last_reset"]
+
+    @property
     def icon(self) -> str:
         """Return the icon."""
         return SENSORS[self.info_type]["icon"]
